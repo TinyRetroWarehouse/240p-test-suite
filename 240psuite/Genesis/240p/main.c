@@ -92,9 +92,10 @@ int main()
 		VDP_drawTextBG(APLAN, "Backlit Zone Test", TILE_ATTR(cursel == 10 ? PAL1 : PAL0, 0, 0, 0), 5, pos++);
 		VDP_drawTextBG(APLAN, "Alternate 240p/480i", TILE_ATTR(cursel == 11 ? PAL1 : PAL0, 0, 0, 0), 5, pos++);
 		VDP_drawTextBG(APLAN, "Sound Test", TILE_ATTR(cursel == 12 ? PAL1 : PAL0, 0, 0, 0), 5, pos++);
-		VDP_drawTextBG(APLAN, "Help", TILE_ATTR(cursel == 13 ? PAL1 : PAL0, 0, 0, 0), 5, pos++);
-		VDP_drawTextBG(APLAN, "Video Options", TILE_ATTR(cursel == 14 ? PAL1 : PAL0, 0, 0, 0), 5, pos++);
-		VDP_drawTextBG(APLAN, "Credits", TILE_ATTR(cursel == 15 ? PAL1 : PAL0, 0, 0, 0), 5, ++pos);
+		VDP_drawTextBG(APLAN, "Audio Sync Test", TILE_ATTR(cursel == 13 ? PAL1 : PAL0, 0, 0, 0), 5, pos++);
+		VDP_drawTextBG(APLAN, "Help", TILE_ATTR(cursel == 14 ? PAL1 : PAL0, 0, 0, 0), 5, pos++);
+		VDP_drawTextBG(APLAN, "Video Options", TILE_ATTR(cursel == 15 ? PAL1 : PAL0, 0, 0, 0), 5, pos++);
+		VDP_drawTextBG(APLAN, "Credits", TILE_ATTR(cursel == 16 ? PAL1 : PAL0, 0, 0, 0), 5, ++pos);
 		DrawResolution();
 
 		Detect_MD(md_ver);
@@ -172,12 +173,15 @@ int main()
 				SoundTest();
 				break;
 			case 13:
-				DrawHelp(HELP_GENERAL);
+				AudioSyncTest();
 				break;
 			case 14:
-				VideoOptions();
+				DrawHelp(HELP_GENERAL);
 				break;
 			case 15:
+				VideoOptions();
+				break;
+			case 16:
 				DrawCredits();
 				break;
 			}
@@ -246,7 +250,6 @@ void TestPatternMenu()
 		buttons = JOY_readJoypad(JOY_1);
 		pressedButtons = buttons & ~oldButtons;
 		oldButtons = buttons;
-
 
 		if(pressedButtons & BUTTON_Z)
 		{
@@ -383,6 +386,8 @@ void Detect_MD(char *str)
 		strcat(str, "MegaDrive JP");
 }
 
+//#define DBELEC
+
 void DrawCredits()
 {
 	u16 ind = 0, size = 0, exit = 0, pos = 8, counter = 1;
@@ -401,9 +406,14 @@ void DrawCredits()
 	VDP_setMyTileMapRect(BPLAN, back_map, TILE_USERINDEX, 0, 0, 320 / 8, 224 / 8);
 
 	VDP_setVerticalScroll(PLAN_A, 4);
+	VDP_setHorizontalScroll(PLAN_A, -4);
 
 #ifdef SEGACD
 	pos = 6;
+#endif
+
+#ifdef DBELEC
+	pos = 7;
 #endif
 
 	VDP_drawTextBG(APLAN, "Code and Patterns:", TILE_ATTR(PAL1, 0, 0, 0), 4, pos++);
@@ -411,7 +421,7 @@ void DrawCredits()
 	VDP_drawTextBG(APLAN, "Menu Pixel Art:", TILE_ATTR(PAL1, 0, 0, 0), 4, pos++);
 	VDP_drawTextBG(APLAN, "Asher", TILE_ATTR(PAL0, 0, 0, 0), 5, pos++);
 	VDP_drawTextBG(APLAN, "SDK:", TILE_ATTR(PAL1, 0, 0, 0), 4, pos++);
-	VDP_drawTextBG(APLAN, "http://code.google.com/p/sgdk/", TILE_ATTR(PAL0, 0, 0, 0), 5, pos++);
+	VDP_drawTextBG(APLAN, "http://stephane-d.github.io/SGDK", TILE_ATTR(PAL0, 0, 0, 0), 5, pos++);
 	VDP_drawTextBG(APLAN, "SDK Consultor:", TILE_ATTR(PAL1, 0, 0, 0), 4, pos++);
 	VDP_drawTextBG(APLAN, "Stef", TILE_ATTR(PAL0, 0, 0, 0), 5, pos++);
 #ifdef SEGACD
@@ -426,15 +436,27 @@ void DrawCredits()
 	VDP_drawTextBG(APLAN, "Konsolkongen & shmups regulars", TILE_ATTR(PAL0, 0, 0, 0), 5, pos++);
 	VDP_drawTextBG(APLAN, "Info on using this test suite:", TILE_ATTR(PAL1, 0, 0, 0), 4, pos++);
 	VDP_drawTextBG(APLAN, "http://junkerhq.net/240p", TILE_ATTR(PAL0, 0, 0, 0), 5, pos++);
+	
+#ifdef DBELEC
+	VDP_drawTextBG(APLAN, "Cartridge and distribution by:", TILE_ATTR(PAL1, 0, 0, 0), 4, pos++);
+	VDP_drawTextBG(APLAN, "http://db-electronics.ca/", TILE_ATTR(PAL0, 0, 0, 0), 5, pos++);
+#endif
 
-	VDP_drawTextBG(APLAN, "Ver. 1.15", TILE_ATTR(PAL0, 0, 0, 0), 26, 6);
-	VDP_drawTextBG(APLAN, "22/01/2016", TILE_ATTR(PAL0, 0, 0, 0), 26, 7);
+	VDP_drawTextBG(APLAN, "Ver. 1.15", TILE_ATTR(PAL1, 0, 0, 0), 26, 6);
+	VDP_drawTextBG(APLAN, "23/02/2016", TILE_ATTR(PAL0, 0, 0, 0), 26, 7);
+	
+	VDP_drawTextBG(BPLAN, "Dedicated to Elisa", TILE_ATTR(PAL0, 0, 0, 0), 18, 24);
 
 #ifdef SEGACD
 	pos = 7;
 #else
+#ifdef DBELEC
+	pos = 8;
+#else
 	pos = 9;
 #endif
+#endif
+
 	while(!exit)
 	{
 		buttons = JOY_readJoypad(JOY_1);
@@ -536,13 +558,13 @@ void VideoOptions()
 			VDP_setMyTileMapRect(BPLAN, back_map, TILE_USERINDEX, 0, 0, 320 / 8, 224 / 8);
 			loadvram = 0;
 		}
-		
+
 		VDP_drawTextBG(APLAN, "Video Options", TILE_ATTR(PAL1, 0, 0, 0), 14, 8);
-		
+
 		DrawResolution();
-		
+
 		VDP_drawTextBG(APLAN, "Enable 480i mode:", TILE_ATTR(sel == 0 ? PAL3 : PAL0, 0, 0, 0), 5, 12);
-		VDP_drawTextBG(APLAN, VDP_Detect_Interlace() ? "ON " : "OFF", TILE_ATTR(sel == 0 ? PAL3 : PAL0, 0, 0, 0), 25, 12);
+		VDP_drawTextBG(APLAN, VDP_Detect_Interlace()? "ON " : "OFF", TILE_ATTR(sel == 0 ? PAL3 : PAL0, 0, 0, 0), 25, 12);
 		VDP_drawTextBG(APLAN, "Enable 240 in PAL:", TILE_ATTR(sel == 1 ? PAL3 : PAL0, 0, 0, 0), 5, 13);
 		VDP_drawTextBG(APLAN, pal_240 ? "ON " : "OFF", TILE_ATTR(sel == 1 ? PAL3 : PAL0, 0, 0, 0), 25, 13);
 
@@ -563,14 +585,14 @@ void VideoOptions()
 
 		if(pressedButtons & BUTTON_UP)
 		{
-			sel --;
+			sel--;
 			if(sel < 0)
 				sel = 2;
 		}
 
 		if(pressedButtons & BUTTON_DOWN)
 		{
-			sel ++;
+			sel++;
 			if(sel > 2)
 				sel = 0;
 		}
@@ -586,9 +608,9 @@ void VideoOptions()
 				else
 					VDP_setScanMode(INTERLACED_MODE1);
 			}
-			
+
 			if(sel == 1 && IsPALVDP)
-			{				
+			{
 				if(IsPALVDP)
 				{
 					if(!pal_240)
@@ -604,7 +626,7 @@ void VideoOptions()
 				}
 			}
 		}
-		
+
 		if(pressedButtons & BUTTON_A && sel == 2)
 		{
 			exit = 1;

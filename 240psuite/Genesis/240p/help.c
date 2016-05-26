@@ -438,12 +438,14 @@ void DrawHelp(int option)
 					VDP_drawTextBG(APLAN, "one on the background, and the", TILE_ATTR(PAL0, 0, 0, 0), 4, y++);
 					VDP_drawTextBG(APLAN, "offset in frames from the actual", TILE_ATTR(PAL0, 0, 0, 0), 4, y++);
 					VDP_drawTextBG(APLAN, "intersection will be shown on", TILE_ATTR(PAL0, 0, 0, 0), 4, y++);
-					VDP_drawTextBG(APLAN, "screen. This can be repeated ten", TILE_ATTR(PAL0, 0, 0, 0), 4, y++);
-					VDP_drawTextBG(APLAN, "times and the software will", TILE_ATTR(PAL0, 0, 0, 0), 4, y++);
+					VDP_drawTextBG(APLAN, "screen. A 1khz tone will be", TILE_ATTR(PAL0, 0, 0, 0), 4, y++);
+					VDP_drawTextBG(APLAN, "played for 1 frame when pressed.", TILE_ATTR(PAL0, 0, 0, 0), 4, y++);
 					VDP_drawTextBG(APLAN, "(cont...)", TILE_ATTR(PAL0, 0, 0, 0), 26, 22);
 					break;
 				case 2:
 					VDP_drawTextBG(APLAN, "MANUAL LAG TEST (2/3)", TILE_ATTR(PAL1, 0, 0, 0), 9, 4);
+					VDP_drawTextBG(APLAN, "This can be repeated ten", TILE_ATTR(PAL0, 0, 0, 0), 4, y++);
+					VDP_drawTextBG(APLAN, "times and the software will", TILE_ATTR(PAL0, 0, 0, 0), 4, y++);
 					VDP_drawTextBG(APLAN, "calculate the average. Whenever", TILE_ATTR(PAL0, 0, 0, 0), 4, y++);
 					VDP_drawTextBG(APLAN, "the button was pressed before", TILE_ATTR(PAL0, 0, 0, 0), 4, y++);
 					VDP_drawTextBG(APLAN, "the actual intersection frame,", TILE_ATTR(PAL0, 0, 0, 0), 4, y++);
@@ -457,12 +459,12 @@ void DrawHelp(int option)
 					VDP_drawTextBG(APLAN, "Of course the evaluation is", TILE_ATTR(PAL0, 0, 0, 0), 4, y++);
 					VDP_drawTextBG(APLAN, "dependent on reflexes and/or", TILE_ATTR(PAL0, 0, 0, 0), 4, y++);
 					VDP_drawTextBG(APLAN, "rhythm more than anything. The", TILE_ATTR(PAL0, 0, 0, 0), 4, y++);
-					VDP_drawTextBG(APLAN, "visual and audio cues are the", TILE_ATTR(PAL0, 0, 0, 0), 4, y++);
-					VDP_drawTextBG(APLAN, "more revealing aspects which", TILE_ATTR(PAL0, 0, 0, 0), 4, y++);
 					VDP_drawTextBG(APLAN, "(cont...)", TILE_ATTR(PAL0, 0, 0, 0), 26, 22);
 					break;
 				case 3:
 					VDP_drawTextBG(APLAN, "MANUAL LAG TEST (3/3)", TILE_ATTR(PAL1, 0, 0, 0), 9, 4);
+					VDP_drawTextBG(APLAN, "visual and audio cues are the", TILE_ATTR(PAL0, 0, 0, 0), 4, y++);
+					VDP_drawTextBG(APLAN, "more revealing aspects which", TILE_ATTR(PAL0, 0, 0, 0), 4, y++);
 					VDP_drawTextBG(APLAN, "the user should consider, of", TILE_ATTR(PAL0, 0, 0, 0), 4, y++);
 					VDP_drawTextBG(APLAN, "course the interactive factor", TILE_ATTR(PAL0, 0, 0, 0), 4, y++);
 					VDP_drawTextBG(APLAN, "can give an experienced player", TILE_ATTR(PAL0, 0, 0, 0), 4, y++);
@@ -508,13 +510,17 @@ void DrawHelp(int option)
 				break;
 			case HELP_SOUND:
 				VDP_drawTextBG(APLAN, "SOUND TEST", TILE_ATTR(PAL1, 0, 0, 0), 4, 4);
-				VDP_drawTextBG(APLAN, "This simple test plays a beep", TILE_ATTR(PAL0, 0, 0, 0), 13, y++);
+				VDP_drawTextBG(APLAN, "This simple test plays a beep", TILE_ATTR(PAL0, 0, 0, 0), 4, y++);
 				VDP_drawTextBG(APLAN, "in either channel, or a synth", TILE_ATTR(PAL0, 0, 0, 0), 4, y++);
 				VDP_drawTextBG(APLAN, "track by shiru in both.", TILE_ATTR(PAL0, 0, 0, 0), 4, y++);
 				y++;
 				VDP_drawTextBG(APLAN, "It can be used to determine if", TILE_ATTR(PAL0, 0, 0, 0), 4, y++);
 				VDP_drawTextBG(APLAN, "the audio chain is working", TILE_ATTR(PAL0, 0, 0, 0), 4, y++);
 				VDP_drawTextBG(APLAN, "properly.", TILE_ATTR(PAL0, 0, 0, 0), 4, y++);
+				y++;
+				VDP_drawTextBG(APLAN, "The Model 2 and later hardware", TILE_ATTR(PAL1, 0, 0, 0), 5, 17);
+				VDP_drawTextBG(APLAN, "revisions may have the channels", TILE_ATTR(PAL1, 0, 0, 0), 5, 18);
+				VDP_drawTextBG(APLAN, "inverted.", TILE_ATTR(PAL1, 0, 0, 0), 5, 19);
 				break;
 			case HELP_LED:
 				switch (page)
@@ -603,11 +609,25 @@ void DrawHelp(int option)
 				break;
 			case HELP_VIDEO:
 				VDP_drawTextBG(APLAN, "VIDEO OPTIONS", TILE_ATTR(PAL1, 0, 0, 0), 13, 4);
-				VDP_drawTextBG(APLAN, "", TILE_ATTR(PAL0, 0, 0, 0), 4, y++);
-				VDP_drawTextBG(APLAN, "", TILE_ATTR(PAL0, 0, 0, 0), 4, y++);
-				VDP_drawTextBG(APLAN, "", TILE_ATTR(PAL0, 0, 0, 0), 4, y++);
-				VDP_drawTextBG(APLAN, "", TILE_ATTR(PAL0, 0, 0, 0), 4, y++);
-				VDP_drawTextBG(APLAN, "", TILE_ATTR(PAL0, 0, 0, 0), 4, y++);
+				VDP_drawTextBG(APLAN, "Here you can enable 480i mode", TILE_ATTR(PAL0, 0, 0, 0), 4, y++);
+				VDP_drawTextBG(APLAN, "for the whole test suite.", TILE_ATTR(PAL0, 0, 0, 0), 4, y++);
+				y++;
+				VDP_drawTextBG(APLAN, "For PAL consoles, you can also", TILE_ATTR(PAL0, 0, 0, 0), 4, y++);
+				VDP_drawTextBG(APLAN, "enable full 240p, instead of", TILE_ATTR(PAL0, 0, 0, 0), 4, y++);
+				VDP_drawTextBG(APLAN, "224p.", TILE_ATTR(PAL0, 0, 0, 0), 4, y++);
+				break;
+			case HELP_AUDIOSYNC:
+				VDP_drawTextBG(APLAN, "AUDIO SYNC", TILE_ATTR(PAL1, 0, 0, 0), 15, 4);
+				VDP_drawTextBG(APLAN, "This test flashes the whole", TILE_ATTR(PAL0, 0, 0, 0), 4, y++);
+				VDP_drawTextBG(APLAN, "screen white for 2 frames,", TILE_ATTR(PAL0, 0, 0, 0), 4, y++);
+				VDP_drawTextBG(APLAN, "along with a 1khz test tone.", TILE_ATTR(PAL0, 0, 0, 0), 4, y++);
+				y++;
+				VDP_drawTextBG(APLAN, "You can verify the sync between", TILE_ATTR(PAL0, 0, 0, 0), 4, y++);
+				VDP_drawTextBG(APLAN, "audio and video with recording", TILE_ATTR(PAL0, 0, 0, 0), 4, y++);
+				VDP_drawTextBG(APLAN, "equipment or specialized", TILE_ATTR(PAL0, 0, 0, 0), 4, y++);
+				VDP_drawTextBG(APLAN, "hardware.", TILE_ATTR(PAL0, 0, 0, 0), 4, y++);
+				y++;
+				VDP_drawTextBG(APLAN, "Press A to start/stop the test.", TILE_ATTR(PAL0, 0, 0, 0), 4, y++);
 				break;
 			default:
 				exit = 1;
