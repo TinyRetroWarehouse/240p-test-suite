@@ -60,6 +60,9 @@ void main()
 		case TOOL_PASSIVE:
 			LagTest();
 			break;
+		case TOOL_AUDIOSYNC:
+			AudioSyncTest();
+			break;
 	}
 	cd_execoverlay(MAIN_OVERLAY);
 }
@@ -389,6 +392,30 @@ sine:   db      18,22,24,26,28,28,30,30
 		db      30,30,28,28,26,24,22,18
 		db      12,8,6,4,2,2,0,0
 		db      0,0,2,2,4,6,8,12
+#endasm		
+}
+
+void SetWave1000()
+{
+#asm	
+		lda     #LOW(112)
+		sta     $0802
+		lda     #HIGH(112)
+		sta     $0803
+	
+		rts
+#endasm		
+}
+
+void SetWave500()
+{
+#asm	
+		lda     #LOW(224)
+		sta     $0802
+		lda     #HIGH(224)
+		sta     $0803
+	
+		rts
 #endasm		
 }
 
@@ -757,6 +784,12 @@ void ManualLagTest()
 			refresh = 0;
 		}
 		
+		if(audio) // n more that one frame with audio
+			StopAudio();
+				
+		if(y == 96) // remove full screen flash
+			set_color_rgb(1, 0, 0, 0);
+		
 		controller = joytrg(0);
 		
 		if (controller & JOY_I)
@@ -764,6 +797,12 @@ void ManualLagTest()
 			if(change)
 			{
 				clicks[pos] = (y - 96) *speed;
+				
+				if(audio && clicks[pos] != 0)
+				{
+					SetWave500();
+					PlayCenter();
+				}
 	
 				if(clicks[pos] >= 0)
 				{
@@ -864,19 +903,23 @@ void ManualLagTest()
 		if(y == 96)
 		{			
 			if(audio)
+			{
+				SetWave1000();
 				PlayCenter();
+			}
 			
 			spr_set(0);
 			spr_pal(1);
 			
 			spr_set(1);
 			spr_pal(1);
+			set_color_rgb(1, 7, 7, 7);   
 		}
 		else
 		{
 			if(y == 97 || y == 95) // one pixel off
 			{
-				StopAudio();
+				//StopAudio();
 				
 				spr_set(0);
 				spr_pal(2);
@@ -946,4 +989,149 @@ void ManualLagTestClickRefresh()
 				put_string(" ", 19, 2+x2);
 		}
 	}
+}
+
+void AudioSyncTest()
+{
+	unsigned char end = 0;
+	int status = -1;
+	int acc = -1;
+	y = 160;
+
+	redraw = 1;
+	refresh = 0;
+	
+	LoadWave();
+	
+    while(!end)
+    {   
+		vsync();
+        if(redraw)
+        {
+			disp_off();
+			ResetVideo();
+			setupFont();
+
+			SetFontColors(13, RGB(2, 2, 2), RGB(0, 6, 0), 0);
+			
+			for(x = 0; x < 16; x++)
+				set_color(x, 0);
+				
+			set_color(2, RGB(7, 7, 7));
+				
+#ifndef CDROM1
+			set_map_data(audiosync_map, 40, 32);
+			set_tile_data(audiosync_bg);
+			load_tile(0x1000);
+			load_map(0, 0, 0, 0, 40, 32);
+#else
+			set_screen_size(SCR_SIZE_64x32); 
+			cd_loadvram(GPHX_OVERLAY, OFS_audiosync_DATA_bin, 0x1000, SIZE_audiosync_DATA_bin);
+			cd_loadvram(GPHX_OVERLAY, OFS_audiosync_BAT_bin, 0x0000, SIZE_audiosync_BAT_bin);
+#endif
+
+			init_satb();
+			set_color_rgb(256, 0, 0, 0); 
+			set_color_rgb(257, 7, 7, 7); 
+#ifndef CDROM1		
+			load_vram(0x5000, LED_sp, 0x100);
+#else
+			cd_loadvram(GPHX_OVERLAY, OFS_LEDsprites_tile_bin, 0x5000, SIZE_LEDsprites_tile_bin);
+#endif
+			spr_make(0, 160, y, 0x5000+0x40, FLIP_MAS|SIZE_MAS, NO_FLIP|SZ_16x16, 0, 1);
+			satb_update();
+			
+			Center224in240();
+			
+            redraw = 0;
+			disp_on();
+		}
+
+        controller = joytrg(0);
+        
+		if (controller & JOY_II)
+			end = 1;
+			
+		if (controller & JOY_I)
+		{
+			refresh = !refresh;
+			if(!refresh)
+				status = 121;
+			else
+				y = 160;
+		}
+		
+		if(refresh && status == -1)
+		{
+			status = 0;
+			acc = -1;
+		}
+		
+		if(status > -1)
+		{
+			status++;
+			if(status <= 120)
+			{
+				y += acc;
+				spr_set(0);				
+				spr_x(160);
+				spr_y(y);			
+				satb_update();
+			}
+		}
+
+		if(status >= 20 && status <= 120)
+		{
+			switch (status)
+			{
+			case 20:
+				break;
+			case 40:
+				set_color(3, RGB(7, 7, 7));
+				break;
+			case 60:
+				acc = 1;
+				set_color(4, RGB(7, 7, 7));
+				break;
+			case 80:
+				set_color(5, RGB(7, 7, 7));
+				break;
+			case 100:
+				set_color(6, RGB(7, 7, 7));
+				break;
+			case 120:
+				set_color(7, RGB(7, 7, 7));
+				break;
+			}
+		}
+		
+		if(status == 120)
+		{
+			PlayCenter();
+			set_color(0, RGB(7, 7, 7));
+		}
+
+		if(status == 122)
+		{
+			set_color(0, 0);
+			
+			for(x = 3; x < 8; x++)
+				set_color(x, 0);
+
+			StopAudio();
+			status = -1;
+		}
+		
+		if (controller & JOY_RUN)
+		{
+			StopAudio();
+			showHelp(AUDIOSYNC_HELP);
+			redraw = 1;
+			refresh = 0;
+			status = 121;
+			y = 160;
+		}
+		
+    }
+	StopAudio();
 }
