@@ -53,11 +53,24 @@ void DropShadowTest()
 {
 	char		msg[50];
 	int		done = 0, x = dW/2, y = dH/2, invert = 0, frame = 0, text = 0, selback = 0, sprite = 0;
-	uint16		pressed;		
-	ImagePtr	back[4], ssprite, shadow, buzz, buzzshadow, overlay;
+	uint16		pressed, currentsonic = 0, currentframe = 0, i = 0;
+	ImagePtr	back[4], ssprite, shadow, buzz, buzzshadow, overlay, sonicback[4];
 	controller 	*st;
 
-	back[1] = LoadKMG("/rd/sonicback.kmg.gz", 0);
+	sonicback[0] = LoadKMG("/rd/sonicback1.kmg.gz", 0);
+	if(!sonicback[0])
+		return;
+	sonicback[1] = LoadKMG("/rd/sonicback2.kmg.gz", 0);
+	if(!sonicback[1])
+		return;
+	sonicback[2] = LoadKMG("/rd/sonicback3.kmg.gz", 0);
+	if(!sonicback[2])
+		return;
+	sonicback[3] = LoadKMG("/rd/sonicback4.kmg.gz", 0);
+	if(!sonicback[3])
+		return;
+
+	back[1] = sonicback[0];
 	if(!back[1])
 		return;
 	back[2] = LoadKMG("/rd/checkpos.kmg.gz", 1);
@@ -83,12 +96,14 @@ void DropShadowTest()
 			return;
 
 		back[0]->scale = 0;
-		back[1]->scale = 0;
+		for(i = 0; i < 4; i++)
+			sonicback[i]->scale = 0;
 		back[2]->scale = 0;
 		back[3]->scale = 0;
 		overlay->scale = 0;
 
-		back[1]->y = (dH - 240)/2;
+		for(i = 0; i < 4; i++)
+			sonicback[i]->y = (dH - 240)/2;
 		overlay->y = (dH - 240)/2;
 	}
 		
@@ -236,9 +251,19 @@ void DropShadowTest()
 		if(y > back[selback]->h + back[selback]->y - shadow->h)
 			y = back[selback]->h + back[selback]->y - shadow->h;
 
+		currentframe ++;
+		if(currentframe > 10)
+		{
+			currentsonic++;
+			if(currentsonic > 3)
+				currentsonic = 0;
+			currentframe = 0;
+			back[1] = sonicback[currentsonic];
+		}
 	}
 	FreeImage(&back[0]);
-	FreeImage(&back[1]);
+	for(i = 0; i < 4; i++)
+		FreeImage(&sonicback[i]);
 	FreeImage(&back[2]);
 	FreeImage(&back[3]);
 	FreeImage(&overlay);
@@ -251,16 +276,29 @@ void DropShadowTest()
 void StripedSpriteTest()
 {	
 	int		done = 0, x = dW/2, y = dH/2, selback = 0;
-	uint16		pressed;
-	ImagePtr	back[4], striped, overlay;
+	uint16		pressed, currentsonic = 0, i = 0, currentframe = 0;
+	ImagePtr	back[4], striped, overlay, sonicback[4];
 	controller *st;
+
+	sonicback[0] = LoadKMG("/rd/sonicback1.kmg.gz", 0);
+	if(!sonicback[0])
+		return;
+	sonicback[1] = LoadKMG("/rd/sonicback2.kmg.gz", 0);
+	if(!sonicback[1])
+		return;
+	sonicback[2] = LoadKMG("/rd/sonicback3.kmg.gz", 0);
+	if(!sonicback[2])
+		return;
+	sonicback[3] = LoadKMG("/rd/sonicback4.kmg.gz", 0);
+	if(!sonicback[3])
+		return;
 
 	if(vmode != VIDEO_480P && vmode != VIDEO_480I && vmode != VIDEO_576I)
 	{		
 		back[0] = LoadKMG("/rd/motoko.kmg.gz", 0);
 		if(!back[0])
 			return;
-		back[1] = LoadKMG("/rd/sonicback.kmg.gz", 1);
+		back[1] = sonicback[0];
 		if(!back[1])
 			return;
 		back[2] = LoadKMG("/rd/checkpos.kmg.gz", 1);
@@ -279,10 +317,11 @@ void StripedSpriteTest()
 		if(!back[0])
 			return;
 		back[0]->scale = 0;
-		back[1] = LoadKMG("/rd/sonicback.kmg.gz", 0);
+		back[1] = sonicback[0];
 		if(!back[1])
 			return;
-		back[1]->scale = 0;
+		for(i = 0; i < 4; i++)
+			sonicback[i]->scale = 0;
 		back[2] = LoadKMG("/rd/checkpos.kmg.gz", 1);
 		if(!back[2])
 			return;
@@ -295,7 +334,8 @@ void StripedSpriteTest()
 		if(!overlay)
 			return;
 
-		back[1]->y = (dH - 240)/2;
+		for(i = 0; i < 4; i++)
+			sonicback[i]->y = (dH - 240)/2;
 		overlay->y = (dH - 240)/2;
 	}
 	striped = LoadKMG("/rd/striped.kmg.gz", 0);
@@ -384,9 +424,19 @@ void StripedSpriteTest()
 		if(y > back[selback]->h + back[selback]->y - striped->h)
 			y = back[selback]->h + back[selback]->y - striped->h;
 
+		currentframe ++;
+		if(currentframe > 10)
+		{
+			currentsonic++;
+			if(currentsonic > 3)
+				currentsonic = 0;
+			currentframe = 0;
+			back[1] = sonicback[currentsonic];
+		}
 	}
 	FreeImage(&back[0]);
-	FreeImage(&back[1]);
+	for(i = 0; i < 4; i++)
+		FreeImage(&sonicback[i]);
 	FreeImage(&back[2]);
 	FreeImage(&back[3]);
 	FreeImage(&overlay);
@@ -734,22 +784,34 @@ void LagTest()
 void ScrollTest()
 {
 	int 		done = 0, speed = 1, acc = 1, x = 0, pause = 0;
-	int 		oldvmode = vmode;
+	int 		oldvmode = vmode, i, currentback = 0, frame = 0;
 	uint16		pressed;		
-	ImagePtr	back, overlay;
+	ImagePtr	back[4], overlay;
 	controller	*st;
 
-	back = LoadKMG("/rd/sonicback.kmg.gz", 0);
-	if(!back)
+	back[0] = LoadKMG("/rd/sonicback1.kmg.gz", 0);
+	if(!back[0])
 		return;
+	back[1] = LoadKMG("/rd/sonicback2.kmg.gz", 0);
+	if(!back[1])
+		return;
+	back[2] = LoadKMG("/rd/sonicback3.kmg.gz", 0);
+	if(!back[2])
+		return;
+	back[3] = LoadKMG("/rd/sonicback4.kmg.gz", 0);
+	if(!back[3])
+		return;
+
 	overlay = LoadKMG("/rd/sonicfloor.kmg.gz", 0);
 	if(!overlay)
 		return;
 	
-	back->y = (dH - 240)/2;
+	for(i = 0; i < 4; i++)
+		back[i]->y = (dH - 240)/2;
 	overlay->y = (dH - 240)/2;
 
-	IgnoreOffset(back);
+	for(i = 0; i < 4; i++)
+		IgnoreOffset(back[i]);
 	IgnoreOffset(overlay);
 
 	updateVMU(" Scroll  ", "", 1);
@@ -757,11 +819,13 @@ void ScrollTest()
 	{
 		if(oldvmode != vmode)
 		{
-			back->y = (dH - 240)/2;
+			for(i = 0; i < 4; i++)
+				back[i]->y = (dH - 240)/2;
 			overlay->y = (dH - 240)/2;
 			if(offsetY)  // center in PAL modes
 			{
-				back->y -= offsetY;
+				for(i = 0; i < 4; i++)
+					back[i]->y -= offsetY;
 				overlay->y -= offsetY;
 			}
 			oldvmode = vmode;
@@ -784,11 +848,19 @@ void ScrollTest()
 		if(x < -1*overlay->tw)
 			x = -1;
 
-		CalculateUV(x, 0, dW, 240, back);
+		CalculateUV(x, 0, dW, 240, back[currentback]);
 		CalculateUV(x*2, 0, dW, 240, overlay);
-		DrawImage(back);
+		DrawImage(back[currentback]);
 		DrawImage(overlay);
 		EndScene();
+		frame ++;
+		if(frame > 10)
+		{
+			currentback++;
+			if(currentback > 3)
+				currentback = 0;
+			frame = 0;
+		}
 
 		st = ReadController(0, &pressed);
 		if(st)
@@ -812,7 +884,8 @@ void ScrollTest()
 				ShowMenu(SCROLL);
 		}
 	}
-	FreeImage(&back);
+	for(i = 0; i < 4; i++)
+		FreeImage(&back[i]);
 	FreeImage(&overlay);
 	return;
 }
