@@ -828,10 +828,10 @@ void LagTest()
 
 void ScrollTest()
 {
-	int 		done = 0, speed = 1, acc = 1, x = 0, pause = 0;
+	int 		done = 0, speed = 1, acc = 1, x = 0, y = 0, pause = 0;
 	int 		oldvmode = vmode, i, currentback = 0, frame = 0;
-	uint16		pressed;		
-	ImagePtr	back[4], overlay;
+	uint16		pressed, vertical = 0;
+	ImagePtr	back[4], overlay, kiki;
 	controller	*st;
 
 	back[0] = LoadKMG("/rd/sonicback1.kmg.gz", 0);
@@ -851,15 +851,20 @@ void ScrollTest()
 	if(!overlay)
 		return;
 	
+	kiki = LoadKMG("/rd/kiki.kmg.gz", 0);
+	if(!kiki)
+		return;
+	
 	for(i = 0; i < 4; i++)
 		back[i]->y = (dH - 240)/2;
 	overlay->y = (dH - 240)/2;
+	kiki->x = (dW - 256)/2;
 
 	for(i = 0; i < 4; i++)
 		IgnoreOffset(back[i]);
 	IgnoreOffset(overlay);
 
-	updateVMU(" Scroll  ", "", 1);
+	updateVMU(" H.Scroll", "", 1);
 	while(!done && !EndProgram) 
 	{
 		if(oldvmode != vmode)
@@ -873,6 +878,7 @@ void ScrollTest()
 					back[i]->y -= offsetY;
 				overlay->y -= offsetY;
 			}
+			kiki->x = (dW - 256)/2;
 			oldvmode = vmode;
 		}
 
@@ -885,18 +891,34 @@ void ScrollTest()
 			speed = 1;
 
 		if(!pause)
-			x += speed * acc;
+		{
+			if(!vertical)
+				x += speed * acc;
+			else
+				y -= speed * acc;
+		}
 		
-		if(x > overlay->tw)
-			x = 1;
+		if(!vertical)
+		{
+			if(x > overlay->tw)
+				x = 1;
+			if(x < -1*overlay->tw)
+				x = -1;
+			CalculateUV(x, 0, dW, 240, back[currentback]);
+			CalculateUV(x*2, 0, dW, 240, overlay);
+			DrawImage(back[currentback]);
+			DrawImage(overlay);
+		}
+		else
+		{
+			if(y > kiki->th)
+				y = 1;
+			if(y < -1*kiki->th)
+				y = -1;
+			CalculateUV(0, y, kiki->tw, dH, kiki);
+			DrawImage(kiki);
+		}
 
-		if(x < -1*overlay->tw)
-			x = -1;
-
-		CalculateUV(x, 0, dW, 240, back[currentback]);
-		CalculateUV(x*2, 0, dW, 240, overlay);
-		DrawImage(back[currentback]);
-		DrawImage(overlay);
 		EndScene();
 		frame ++;
 		if(frame > 10)
@@ -924,6 +946,15 @@ void ScrollTest()
 
 			if (pressed & CONT_X)
 				acc *= -1;
+
+			if (pressed & CONT_Y)
+			{
+				vertical = !vertical;
+				if(!vertical)
+					updateVMU(" H.Scroll", "", 1);
+				else
+					updateVMU(" V.Scroll", "", 1);
+			}
 
 			if (pressed & CONT_START)
 				ShowMenu(SCROLL);
