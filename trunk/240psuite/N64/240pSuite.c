@@ -19,20 +19,17 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA	02111-1307	USA
  */
 
-#include <stdio.h>
-#include <string.h>
-#include <stdint.h>
-#include <libdragon.h>
-#include "image.h"
+
 #include "utils.h"
 #include "tests.h"
 #include "patterns.h"
+#include "menu.h"
 
 void DrawPatternsMenu();
 
 int main(void)
 {
-	int sel = 1, reload = 0;
+	int sel = 1, reload = 0, showmenu = 0;
 	sprite_t *back = NULL, *sd = NULL;
 	struct controller_data keys;
 	char str[20];
@@ -85,17 +82,27 @@ int main(void)
 		
 		sprintf(str, "RAM %d MB", DetectRamSize());
 		DrawStringS(254, 224, 0xfa, 0xfa, 0xfa, str);
+		
+		if(showmenu)
+		{
+			showMenu();
+			showmenu = 0;
+			ClearScreen();
+		}
 
         WaitVsync();
 
         controller_scan();
-        keys = get_keys_down();
+        keys = Controller_ButtonsDown();
 
 		if(keys.c[0].up)
 			sel--;
 
 		if(keys.c[0].down)
 			sel++;
+		
+		if(keys.c[0].start)
+			showmenu = 1;
 		
 		if(sel > c)
 			sel = 1;
@@ -107,7 +114,7 @@ int main(void)
 			FreeImage(&back);
 			FreeImage(&sd);
 			
-			ClearScreen();
+			//ClearScreen();
 			
 			switch(sel)
 			{
@@ -200,7 +207,7 @@ void DrawPatternsMenu()
         WaitVsync();
 
         controller_scan();
-        keys = get_keys_down();
+        keys = Controller_ButtonsDown();
 
 		if(keys.c[0].up)
 			sel--;
@@ -218,7 +225,7 @@ void DrawPatternsMenu()
 			FreeImage(&back);
 			FreeImage(&sd);
 			
-			ClearScreen();
+			//ClearScreen();
 			
 			switch(sel)
 			{
@@ -227,6 +234,15 @@ void DrawPatternsMenu()
 					break;
 				case 2:
 					DrawColorBars();
+					break;
+				case 6:
+					DrawGrid();
+					break;
+				case 11:
+					DrawSolidColor();
+					break;
+				case 14:
+					DrawOverscan();
 					break;
 				case 15:
 					end = 1;
