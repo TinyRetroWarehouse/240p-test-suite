@@ -24,3 +24,6 @@
 
 void DropShadowTest();
 void DrawCheckerboard();
+void DrawStripes();
+void DrawGridScroll();
+void DrawScroll();
