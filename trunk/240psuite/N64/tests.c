@@ -26,7 +26,7 @@
 void DropShadowTest()
 {
 	int end = 0, show = 1;
-	int x = 0, y = 0, xlast = 0, ylast = 0;
+	int x = 0, y = 0;
 	sprite_t *back = NULL, *shadow = NULL;
 	struct controller_data keys;
 	
@@ -50,9 +50,6 @@ void DropShadowTest()
 		CheckMenu(DROPSHADOW);
 		WaitVsync();
 		
-		xlast = x;
-		ylast = y;
-
         controller_scan();
 		keys = Controller_ButtonsHeld();
 
@@ -78,6 +75,7 @@ void DropShadowTest()
 		if(x < 0)
 			x = 0;
 		
+		// Test code for DMA
 		keys = Controller_ButtonsDown();
 		if(keys.c[0].B)
 			end = 1;
@@ -91,7 +89,8 @@ void DropShadowTest()
 
 void DrawCheckerboard()
 {
-	int end = 0, type = 0;
+	int end = 0, type = 0, alternate = 0;
+	int frame = 0, dframe = 0;
 	sprite_t *pos = NULL, *neg = NULL;
 	struct controller_data keys;
 	
@@ -111,6 +110,25 @@ void DrawCheckerboard()
 			rdp_FillScreenWithTexture(neg);
 		rdp_end();
 		
+		if(dframe)
+		{
+			char msg[20];
+
+			sprintf(msg, "Frame: %02d", frame);
+			DrawStringB(20, 210, 0xff, 0xff, 0xff, msg);
+			frame ++;
+			if(!useNTSC)
+			{
+				if(frame > 49)
+					frame = 0;
+			}
+			else
+			{
+				if(frame > 59)
+					frame = 0;
+			}
+		}
+		
 		CheckMenu(CHECKHELP);
 		WaitVsync();
 		
@@ -118,15 +136,295 @@ void DrawCheckerboard()
 		keys = Controller_ButtonsDown();
 		
 		if(keys.c[0].A)
+			alternate = !alternate;
+			
+		if(keys.c[0].C_left)
+		{
+			dframe = !dframe;
+			frame = 0;
+		}
+		
+		if(keys.c[0].C_right && !alternate)
 			type = !type;
 			
 		if(keys.c[0].B)
 			end = 1;
 		CheckStart(keys);
+		
+		if(alternate)
+			type = !type;
 	}
 	
 	FreeImage(&pos);
 	FreeImage(&neg);
 }
+
+void DrawStripes()
+{
+	int end = 0, type = 0, alternate = 0;
+	int frame = 0, dframe = 0, vertical = 0;
+	sprite_t *pos = NULL, *neg = NULL;
+	sprite_t *vstripespos = NULL, *vstripesneg = NULL;
+	struct controller_data keys;
+	
+	if(!pos)
+		pos = LoadImage("/stripespos.bin");
+	if(!neg)
+		neg = LoadImage("/stripesneg.bin");
+	if(!vstripespos)
+		vstripespos = LoadImage("/vertstripespos.bin");
+	if(!vstripesneg)
+		vstripesneg = LoadImage("/vertstripesneg.bin");
+			
+    while(!end)
+    {	
+		GetDisplay();
+
+		rdp_texture_start();
+		if(!vertical)
+		{
+			if(type)
+				rdp_FillScreenWithTexture(pos);
+			else
+				rdp_FillScreenWithTexture(neg);
+		}
+		else
+		{
+			if(type)
+				rdp_FillScreenWithTexture(vstripespos);
+			else
+				rdp_FillScreenWithTexture(vstripesneg);
+		}
+		rdp_end();
+		
+		if(dframe)
+		{
+			char msg[20];
+
+			sprintf(msg, "Frame: %02d", frame);
+			DrawStringB(20, 210, 0xff, 0xff, 0xff, msg);
+			frame ++;
+			if(!useNTSC)
+			{
+				if(frame > 49)
+					frame = 0;
+			}
+			else
+			{
+				if(frame > 59)
+					frame = 0;
+			}
+		}
+		
+		CheckMenu(STRIPESHELP);
+		WaitVsync();
+		
+		controller_scan();
+		keys = Controller_ButtonsDown();
+		
+		if(keys.c[0].A)
+			alternate = !alternate;
+		
+		if(keys.c[0].R)
+			vertical = !vertical;
+	
+		if(keys.c[0].C_left)
+		{
+			dframe = !dframe;
+			frame = 0;
+		}
+		
+		if(keys.c[0].C_right && !alternate)
+			type = !type;
+			
+		if(keys.c[0].B)
+			end = 1;
+		CheckStart(keys);
+		
+		if(alternate)
+			type = !type;
+	}
+	
+	FreeImage(&pos);
+	FreeImage(&neg);
+	FreeImage(&vstripespos);
+	FreeImage(&vstripesneg);
+}
+
+void DrawGridScroll()
+{
+	int end = 0, x = -8, y = -8;
+	int speed = 1, acc = 1, pause = 0, direction = 0;
+	sprite_t *grid = NULL;
+	struct controller_data keys;
+	
+	if(!grid)
+		grid = LoadImage("/circles_grid.bin");
+	
+    while(!end)
+    {	
+		GetDisplay();
+
+		rdp_texture_start();
+		rdp_FillScreenWithTextureXY(x-7, y-7, grid);
+		rdp_end();
+		
+		CheckMenu(GRIDSCROLL);
+		WaitVsync();
+		
+		if(!pause)
+		{
+			if(direction)
+				x += speed * acc;
+			else
+				y += speed * acc;
+		}	
+		
+		controller_scan();
+		keys = Controller_ButtonsDown();
+			
+		if(keys.c[0].up)
+			speed ++;
+
+		if(keys.c[0].down)
+			speed --;
+			
+		if(keys.c[0].B)
+			end = 1;
+		
+		if(keys.c[0].A)
+			pause = !pause;
+			
+		if(keys.c[0].C_left)
+			acc *= -1;
+
+		if(keys.c[0].C_right)
+			direction = !direction;
+		
+		if(x < -7)
+			x = 0;
+		if(x > 7)
+			x = 0;
+			
+		if(y < -7)
+			y = 0;
+		if(y > 7)
+			y = 0;
+			
+		if(speed > 5)
+			speed = 5;
+
+		if(speed < 1)
+			speed = 1;
+			
+		CheckStart(keys);
+	}
+	
+	FreeImage(&grid);
+}
+
+void DrawScroll()
+{
+	int end = 0, x = 0, y = 0, currentsonic = 0, currentframe = 0;
+	int speed = 4, acc = -1, pause = 0, vertical = 0;
+	sprite_t *sonicback[4], *overlay, *palm= NULL;	
+	struct controller_data keys;
+	
+	sonicback[0] = LoadImage("/sonicback1.bin");
+	sonicback[1] = LoadImage("/sonicback2.bin");
+	sonicback[2] = LoadImage("/sonicback3.bin");
+	sonicback[3] = LoadImage("/sonicback4.bin");
+	
+	palm = LoadImage("/sonicpalm.bin");
+	overlay = LoadImage("/sonicfloor.bin");
+	
+    while(!end)
+    {	
+		GetDisplay();
+
+		if(x > 0)
+			drawImageDMA(x-256, 0, sonicback[currentsonic]);
+		drawImageDMA(x, 0, sonicback[currentsonic]);
+		if(x < 64)
+			drawImageDMA(x+256, 0, sonicback[currentsonic]);
+		
+		if(x > 0)
+			drawImageDMA(2*x-512, 210, overlay);
+		drawImageDMA(2*x, 210, overlay);
+		if(x < 64)
+			drawImageDMA(2*x+512, 210, overlay);
+			
+		SoftDrawImage(x*2+96, 112, palm);
+		
+		CheckMenu(SCROLL);
+		WaitVsync();
+		
+		if(!pause)
+		{
+			if(!vertical)
+				x += speed * acc;
+			else
+				y -= speed * acc;
+		}
+		
+		controller_scan();
+		keys = Controller_ButtonsDown();
+			
+		if(keys.c[0].up)
+			speed += 4;
+
+		if(keys.c[0].down)
+			speed -= 4;
+			
+		if(keys.c[0].B)
+			end = 1;
+		
+		if(keys.c[0].A)
+			pause = !pause;
+			
+		if(keys.c[0].C_left)
+			acc *= -1;
+
+		if(keys.c[0].C_right)
+			vertical = !vertical;
+		
+		if(x < -128)
+			x = 128 - speed;
+		if(x > 128)
+			x = -128 + speed;
+			
+		if(y < -7)
+			y = 0;
+		if(y > 7)
+			y = 0;
+			
+		if(speed > 16)
+			speed = 16;
+
+		if(speed < 4)
+			speed = 4;
+			
+		if(!vertical)
+		{
+			currentframe ++;
+			if(currentframe > 10)
+			{
+				currentsonic++;
+				if(currentsonic > 3)
+					currentsonic = 0;
+				currentframe = 0;
+			}
+		}
+			
+		CheckStart(keys);
+	}
+	
+	for(x = 0; x < 4; x++)
+		FreeImage(&sonicback[x]);
+	FreeImage(&overlay);
+	FreeImage(&palm);
+}
+
+
 
 

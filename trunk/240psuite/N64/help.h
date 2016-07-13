@@ -49,7 +49,6 @@ extern char *HelpData;
 #define PASSIVELAG		"/help/passivelag.txt"
 #define SMPTECOLOR		"/help/SMPTEColor.txt"
 #define WHITEHELP		"/help/white.txt"
-#define LINEARVGAHELP	"/help/linearityvga.txt"
 #define LINEARITYHELP	"/help/linearity.txt"
 #define LIN224HELP		"/help/linearity224.txt"
 #define SHARPNESSHELP	"/help/sharpness.txt"
@@ -57,6 +56,9 @@ extern char *HelpData;
 #define OPTIONSHELP		"/help/options.txt"
 #define VIDEOHELP		"/help/vmode.txt"
 #define DIAGONALHELP	"/help/diagonal.txt"
+
+#define OVERSCANWARNING	"/help/warningoverscan.txt"
+#define GRIDWARNING		"/help/warninggrid.txt"
 
 void HelpWindow(char *filename, int usebuffer);
 char *LoadHelpFile(char *filename, char ***pages, int *npages);
