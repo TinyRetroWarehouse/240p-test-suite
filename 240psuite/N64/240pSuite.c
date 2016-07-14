@@ -57,8 +57,10 @@ int main(void)
 		
 		GetDisplay();
 		
-		drawImageDMA(0, 0, back);
-		SoftDrawImage(221, 86, sd);		
+		rdp_texture_start();
+		rdp_DrawImage(0, 0, back);
+		rdp_DrawImage(221, 86, sd);		
+		rdp_end();
 		
 		DrawStringS(x, y, r, sel == c ? 0 : g, sel == c ? 0 : b, "Test Patterns >"); y += fh; c++;
 		DrawStringS(x, y, r, sel == c ? 0 : g, sel == c ? 0 : b, "Drop Shadow Test"); y += fh; c++;
@@ -172,8 +174,11 @@ void DrawPatternsMenu()
 		}
 		
 		GetDisplay();
-		drawImageDMA(0, 0, back);
-		SoftDrawImage(221, 86, sd);
+		
+		rdp_texture_start();
+		rdp_DrawImage(0, 0, back);
+		rdp_DrawImage(221, 86, sd);
+		rdp_end();
 		
 		DrawStringS(x, y, r, sel == c ? 0 : g,	sel == c ? 0 : b, "Pluge"); y += fh; c++;
 		DrawStringS(x, y, r, sel == c ? 0 : g,	sel == c ? 0 : b, "Color Bars"); y += fh; c++;
