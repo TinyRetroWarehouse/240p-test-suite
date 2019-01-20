@@ -858,7 +858,7 @@ void ScrollTest()
 	for(i = 0; i < 4; i++)
 		back[i]->y = (dH - 240)/2;
 	overlay->y = (dH - 240)/2;
-	kiki->x = (dW - 256)/2;
+	kiki->x = (dW - 320)/2;
 
 	for(i = 0; i < 4; i++)
 		IgnoreOffset(back[i]);
@@ -878,7 +878,7 @@ void ScrollTest()
 					back[i]->y -= offsetY;
 				overlay->y -= offsetY;
 			}
-			kiki->x = (dW - 256)/2;
+			kiki->x = (dW - 320)/2;
 			oldvmode = vmode;
 		}
 
