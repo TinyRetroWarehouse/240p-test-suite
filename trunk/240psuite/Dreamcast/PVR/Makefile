@@ -78,14 +78,14 @@ run: $(TARGET).bin
 
 cdi: $(TARGET).bin
 	scramble $(TARGET).bin 1ST_READ.BIN
-	mkisofs -C 0,11702 -V 240pPVR -G ../IP/IP.BIN -joliet -rock -l -o 240p.iso 0GDTEX.pvr 1ST_READ.BIN
-	cdi4dc 240p.iso 240pPVR.cdi
+	mkisofs -C 0,11702 -V 240pSuite -G ../IP/IP.BIN -joliet -rock -l -o 240p.iso 0GDTEX.pvr 1ST_READ.BIN
+	cdi4dc 240p.iso 240pSuite.cdi
 	rm 240p.iso 1ST_READ.BIN
 
 zip: $(TARGET).bin
 	scramble $(TARGET).bin 1ST_READ.BIN
-	mkisofs -C 0,11702 -V 240pPVR -G ../IP/IP.BIN -joliet -rock -l -o 240p.iso 0GDTEX.pvr 1ST_READ.BIN
-	cdi4dc 240p.iso 240pPVR.cdi
-	zip 240p-DC-PVR-1.x.zip  README.TXT 240pPVR.cdi
-	rm 240p.iso 1ST_READ.BIN 240pPVR.cdi
+	mkisofs -C 0,11702 -V 240pSuite -G ../IP/IP.BIN -joliet -rock -l -o 240p.iso 0GDTEX.pvr 1ST_READ.BIN
+	cdi4dc 240p.iso 240pSuite.cdi 
+	zip 240p-DC-PVR-1.x.zip  README.TXT 240pSuite.cdi
+	rm 240p.iso 1ST_READ.BIN 240pSuite.cdi
 
