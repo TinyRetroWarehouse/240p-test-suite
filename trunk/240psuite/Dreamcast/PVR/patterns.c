@@ -631,7 +631,7 @@ void DrawColorBleed()
 
 void DrawGrid(int full)
 {
-	int 		done = 0, oldvmode = vmode;
+	int 		done = 0, oldvmode = vmode, border = 0;
 	uint16		pressed;		
 	ImagePtr	back = NULL;
 	controller	*st;
@@ -694,10 +694,23 @@ void DrawGrid(int full)
 		st = ReadController(0, &pressed);
 		if(st)
 		{
+			if (pressed & CONT_A)
+			{
+				border = !border;
+				if(!border)
+                                	vid_border_color(0, 0, 0);
+                        	else
+                                	vid_border_color(255, 255, 255);
+			}
 			if (pressed & CONT_B)
 				done =	1;											
 			if (pressed & CONT_START)
 			{
+				if(border)
+				{
+					vid_border_color(0, 0, 0);
+					border = 0;
+				}
 				if(full)
 					ShowMenu(GRIDHELP);
 				else
@@ -706,6 +719,8 @@ void DrawGrid(int full)
 		}
 	}
 
+	if(border)
+		 vid_border_color(0, 0, 0);
 	FreeImage(&back);
 	return;
 }
