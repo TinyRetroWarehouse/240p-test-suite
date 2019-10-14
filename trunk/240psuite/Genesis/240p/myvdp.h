@@ -22,16 +22,15 @@
 #ifndef MYVDP_H
 #define MYVDP_H
 
-#ifdef SEGACD
-  #define USE_DMA 0
-#else
-  #define USE_DMA 1
-#endif
+#define USE_DMA 0
 
 void VDP_setSpriteAttr(u16 index, u16 tile_attr);
 void VDP_setMyTileMapRect(u16 plan, const u16 *data, u16 basetile, u16 x, u16 y, u16 w, u16 h);
 u16 Detect_VDP_PAL();
 u8 VDP_Detect_Interlace();
+
+void VDP_Start();
+void VDP_End();
 
 extern u16 pal_240;
 extern u16 enable_256;
