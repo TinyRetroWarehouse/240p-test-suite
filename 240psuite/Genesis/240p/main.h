@@ -30,8 +30,14 @@
 extern u8		joytype;
 extern u8		IsPALVDP;
 extern u8		VDPChanged;
+extern u8		intCancel;
+extern u8		joytype2;
+
+extern u8 		doZ80Lock;
 
 #define FADE_TIME 10
+
+#define SCDTEST
 
 void TestPatternMenu();
 void DrawCredits();
@@ -39,8 +45,32 @@ void DrawIntro();
 void Detect_MD(char *str);
 void FadeAndCleanUp();
 void CleanUp();
+void VBlankIntCallback();
 u8 CheckHelpAndVO(u16 *buttons, u16 *pressedButtons, int option);
 void StopPSG();
+void DrawHelpText();
+void VBlankIntCallbackCancel();
+void DrawMainBG();
+void DrawMainBGwithGillian(u8 DrawGillian, u8 GillianX, u8 GillianY);
+void DrawResolution();
+void VideoOptions();
+void VideoTestsMenu();
+void AudioTestsMenu();
+void HardwareMenu();
+void ControllerTest();
 
-extern u8	joytype;
 
+#ifndef MENUDATA
+#define MENUDATA
+typedef struct menu_data {
+    u16		id;
+	char	*name;
+} fmenudata;
+#endif
+
+#define RES_320 1
+#define RES_256 2
+
+u16 DrawFloatMenuRes(u16 def);
+u16 DrawFloatMenuResExtra(u16 def, char *option);
+u16 DrawFloatMenu(u16 def, fmenudata *data, u16 size);
