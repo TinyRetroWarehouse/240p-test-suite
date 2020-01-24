@@ -1,7 +1,7 @@
 TARGET = main
 
 #optional -DUSE_FFTW -DSERIAL 
-CFLAGS=-O3 -fomit-frame-pointer -DDREAMCAST -DUSE_FFTW -DSERIAL
+CFLAGS=-O3 -fomit-frame-pointer -DDREAMCAST -DUSE_FFTW 
 
 KOS_CFLAGS+= $(CFLAGS) 
 
