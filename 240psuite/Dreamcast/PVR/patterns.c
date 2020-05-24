@@ -590,20 +590,43 @@ void Draw601ColorBars()
 void DrawColorBleed()
 {
 	int 		done = 0, type = 0;
-	uint16		pressed;		
-	ImagePtr	back, backchk;
+	uint16		pressed, oldvmode = vmode;
+	ImagePtr	back = NULL, backchk = NULL;
 	controller	*st;
 
-	back = LoadKMG("/rd/colorbleed.kmg.gz", 0);
-	if(!back)
-		return;
-	backchk = LoadKMG("/rd/colorbleedchk.kmg.gz", 0);
-	if(!backchk)
-		return;
-		
 	updateVMU("Bleed CHK", "", 1);
 	while(!done && !EndProgram) 
 	{
+		if(oldvmode != vmode)
+		{
+			FreeImage(&back);		
+			FreeImage(&backchk);		
+			oldvmode = vmode;
+		}
+
+		if(!back)
+		{
+			if(vmode == VIDEO_480I || vmode == VIDEO_480P || vmode == VIDEO_576I)
+                        {
+                        	back = LoadKMG("/rd/480/colorbleed-480.kmg.gz", 0);
+                                if(!back)
+                                	return;
+                                back->scale = 0;
+                        	backchk = LoadKMG("/rd/480/colorbleed-480-chk.kmg.gz", 0);
+                                if(!backchk)
+                                	return;
+                                backchk->scale = 0;
+                        }
+			else
+			{
+				back = LoadKMG("/rd/colorbleed.kmg.gz", 0);
+				if(!back)
+					return;
+				backchk = LoadKMG("/rd/colorbleedchk.kmg.gz", 0);
+				if(!backchk)
+					return;
+			}
+		}
 		StartScene();
 		if(!type)
 			DrawImage(back);
